@@ -32,6 +32,18 @@ Pada proyek ini, kami menggunakan tiga dataset klasifikasi sampah dari Kaggle ya
 
 Dataset ini kemudian **digabungkan** menjadi satu dataset yang lebih besar untuk meningkatkan variasi data dan performa model klasifikasi.
 
+## Cara Penggunaan
+
+### Cara Menjalankan Dashboard:
+
+1. Install semua library yang diperlukan: Menggunakan pip install untuk menginstal library yang diperlukan. Anda bisa melakukannya secara manual:
+`pip install numpy pandas matplotlib seaborn streamlit babel`
+Atau menggunakan requirements.txt untuk menginstal semua library yang tercantum di dalamnya:
+`pip install -r requirements.txt`
+2. Masuk ke folder Dashbord: Mengubah direktori kerja ke folder dashboard tempat file dashboard.py berada:
+`cd Trashgu-streamlit`
+3. Jalankan file app.py dengan Streamlit: Menjalankan aplikasi dashboard menggunakan Streamlit dengan perintah:
+`streamlit run app.py`
 
 # Pengembang
 Coding Camp 2025 Team CC25-CF125 
