@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrashGu - Klasifikasi Sampah</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        #camera-feed {
+            width: 100%; max-height: 400px; border-radius: 0.5rem; background-color: #1f2937; transform: scaleX(-1);
+        }
+        #image-canvas {
+            display: none;
+        }
+              .profile-dropdown {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 0.5rem;
+        z-index: 50; /* Pastikan di atas konten lain */
+      }
+      html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+    </style>
+</head>
+
+<body class="font-sans text-gray-700 bg-[#F5F7FA]">
+    <header class="bg-footer-bg shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center gap-2">
+            <a href="./index.html">
+              <img src="./assets/images/logo.png" alt="TrashGu Logo" class="h-9" />
+            </a>
+          </div>
+          
+          <!-- Menu Pengguna (Login/Daftar atau Dropdown Profil) -->
+          <div class="flex items-center">
+              <div id="nav-auth-guest-hasil" class="flex items-center gap-3 text-sm">
+                <a href="./registrasi.html" class="text-gray-600 hover:text-custom-green font-medium text-xs sm:text-sm">Daftar</a>
+                <a href="./login.html" class="bg-custom-green text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-md font-medium hover:bg-custom-green-darker transition-colors text-xs sm:text-sm">Masuk</a>
+              </div>
+              <div id="nav-auth-user-hasil" class="hidden relative">
+                  <button id="user-profile-button-hasil" type="button" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-custom-green">
+                      <span class="sr-only">Buka menu pengguna</span>
+                      <img class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/A0AEC0/FFFFFF?text=U" alt="User Avatar" id="navbar-user-avatar-hasil">
+                      <span id="navbar-user-name-short-hasil" class="hidden sm:inline-block ml-2 text-gray-700 font-medium">User</span>
+                      <svg class="hidden sm:inline-block ml-1 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                  </button>
+                  <div id="user-profile-dropdown-hasil" class="profile-dropdown hidden origin-top-right w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none py-1">
+                      <a href="./dashboard.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Dashboard</a>
+                      <a href="./klasifikasi.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Klasifikasi Baru</a>
+                      <button id="navbar-logout-button-hasil" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</button>
+                  </div>
+              </div>
+          </div>
+    </header>
+
+    <main class="py-12 sm:py-16">
+        <section class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg">
+                <div class="text-center mb-6">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Klasifikasi Sampah</h1>
+                    <p class="text-sm text-gray-500 mt-2">Unggah gambar sampah untuk mengetahui kategorinya.</p>
+                </div>
+
+                                <!-- === PENAMBAHAN BARU: KOTAK TIPS PENGGUNA === -->
+                <div class="mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-left text-sm text-emerald-800 flex items-start gap-3">
+                    <i class="fas fa-lightbulb mt-1 text-emerald-500 fa-fw"></i>
+                    <div>
+                        <h4 class="font-semibold">Tips untuk Hasil Terbaik:</h4>
+                        <ul class="list-disc list-inside mt-1 text-emerald-700">
+                            <li>Posisikan objek sampah di tengah gambar.</li>
+                            <li>Pastikan pencahayaan cukup dan hindari bayangan.</li>
+                            <li>Gunakan latar belakang yang kontras dan tidak ramai.</li>
+                        </ul>
+                    </div>
+                </div>
+                <br>
+
+                <div id="initial-view">
+                    <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                        <button id="select-source-button" class="mt-6 w-full sm:w-auto inline-flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#3F7D58] hover:bg-[#326748]">
+                            Pilih Sumber Gambar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="camera-view" class="hidden">
+                    <div class="relative w-full mx-auto bg-black rounded-lg overflow-hidden">
+                        <video id="camera-feed" playsinline autoplay></video>
+                        <canvas id="image-canvas"></canvas>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <button id="capture-button" class="px-6 py-2.5 bg-red-600 text-white font-medium text-sm rounded-full shadow-md hover:bg-red-700">
+                            <i class="fas fa-camera"></i> Ambil Gambar
+                        </button>
+                         <button id="cancel-camera-button" class="ml-2 px-4 py-2 bg-gray-200 text-gray-700 text-xs font-semibold rounded hover:bg-gray-300">Batal</button>
+                    </div>
+                </div>
+                
+                <div id="preview-view" class="hidden my-4 text-center">
+                    <img id="image-preview" src="#" alt="Preview Gambar" class="max-h-64 mx-auto rounded-md shadow-md" />
+                    <p class="mt-2 text-sm text-gray-600">Nama File: <span id="file-name" class="font-semibold"></span></p>
+                    <div class="mt-4">
+                        <button id="retake-button" class="px-4 py-2 bg-gray-600 text-white text-xs font-semibold rounded hover:bg-gray-700">
+                            <i class="fas fa-sync-alt mr-2"></i> Ganti Gambar
+                        </button>
+                    </div>
+                </div>
+                
+                <input id="image-upload" type="file" class="hidden" accept="image/png, image/jpeg, image/jpg">
+                <div id="error-message" class="hidden mt-4 text-center text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+
+                <div id="classify-button-container" class="mt-8 hidden">
+                    <button id="classify-button" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#3F7D58] hover:bg-[#326748]">
+                        <span id="button-text">Klasifikasi</span>
+                        <svg id="button-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="source-modal" class="modal-overlay fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden opacity-0">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-sm transform scale-95">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Pilih Sumber Gambar</h3>
+                <button id="close-modal-button" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <button id="open-camera-button" class="w-full flex items-center justify-center gap-3 py-3 px-4 text-gray-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
+                    <i class="fas fa-camera"></i> Buka Kamera
+                </button>
+                <button id="open-gallery-button" class="w-full flex items-center justify-center gap-3 py-3 px-4 text-gray-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
+                    <i class="fas fa-images"></i> Pilih dari Galeri
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <footer class="bg-footer-bg text-gray-600 py-6 text-center mt-16 sm:mt-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-xs sm:text-sm">&copy; 2025 TrashGu | CC25-CF125. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // === Referensi Elemen ===
+            const initialView = document.getElementById('initial-view');
+            const cameraView = document.getElementById('camera-view');
+            const previewView = document.getElementById('preview-view');
+            const classifyButtonContainer = document.getElementById('classify-button-container');
+            const selectSourceButton = document.getElementById('select-source-button');
+            const sourceModal = document.getElementById('source-modal');
+            const closeModalButton = document.getElementById('close-modal-button');
+            const openCameraButton = document.getElementById('open-camera-button');
+            const openGalleryButton = document.getElementById('open-gallery-button');
+            const fileInput = document.getElementById('image-upload');
+            const previewImage = document.getElementById('image-preview');
+            const fileNameEl = document.getElementById('file-name');
+            const classifyButton = document.getElementById('classify-button');
+            const buttonText = document.getElementById('button-text');
+            const buttonSpinner = document.getElementById('button-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const videoFeed = document.getElementById('camera-feed');
+            const imageCanvas = document.getElementById('image-canvas');
+            const captureButton = document.getElementById('capture-button');
+            const cancelCameraButton = document.getElementById('cancel-camera-button');
+            const retakeButton = document.getElementById('retake-button');
+            let selectedFile = null;
+            let activeStream = null;
+
+            // === PENAMBAHAN FUNGSI GUARD/CHECK ===
+            // Fungsi ini akan memastikan elemen ada sebelum menambahkan event listener
+            function addSafeEventListener(element, event, handler) {
+                if (element) {
+                    element.addEventListener(event, handler);
+                }
+            }
+
+            const navAuthGuest = document.getElementById('nav-auth-guest-hasil');
+        const navAuthUser = document.getElementById('nav-auth-user-hasil');
+        const userProfileButton = document.getElementById('user-profile-button-hasil');
+        const userProfileDropdown = document.getElementById('user-profile-dropdown-hasil');
+        const navbarUserAvatar = document.getElementById('navbar-user-avatar-hasil');
+        const navbarUserNameShort = document.getElementById('navbar-user-name-short-hasil');
+        const dropdownUserNameFull = document.getElementById('dropdown-user-name-full-hasil');
+        const navbarLogoutButton = document.getElementById('navbar-logout-button-hasil');
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button-hasil');
+        const mobileMenu = document.getElementById('mobile-menu-hasil');
+        const mobileNavAuthGuest = document.getElementById('mobile-nav-auth-guest-hasil');
+        const mobileNavAuthUser = document.getElementById('mobile-nav-auth-user-hasil');
+        const mobileNavbarUserName = document.getElementById('mobile-navbar-user-name-hasil');
+        const mobileNavbarLogoutButton = document.getElementById('mobile-navbar-logout-button-hasil');
+
+        let authTokenHasil = localStorage.getItem('authToken');
+        let currentUserHasil = null;
+        const currentUserStringHasil = localStorage.getItem('currentUser');
+
+        if (currentUserStringHasil) {
+            try {
+                currentUserHasil = JSON.parse(currentUserStringHasil);
+            } catch (e) {
+                console.error("Gagal parse currentUser dari localStorage (hasil):", e);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                authTokenHasil = null; 
+            }
+        }
+         if (authTokenHasil && !currentUserHasil) { 
+            localStorage.removeItem('authToken');
+            authTokenHasil = null;
+        }
+
+        function updateAuthStateUIHasil() {
+            authTokenHasil = localStorage.getItem('authToken');
+            const storedUserHasil = localStorage.getItem('currentUser');
+            currentUserHasil = storedUserHasil ? JSON.parse(storedUserHasil) : null;
+
+            if (authTokenHasil && currentUserHasil) {
+                if (navAuthGuest) navAuthGuest.classList.add('hidden');
+                if (navAuthUser) navAuthUser.classList.remove('hidden');
+                if (mobileNavAuthGuest) mobileNavAuthGuest.classList.add('hidden');
+                if (mobileNavAuthUser) mobileNavAuthUser.classList.remove('hidden');
+
+                const displayName = currentUserHasil.namaPengguna || currentUserHasil.email.split('@')[0];
+                if (navbarUserAvatar) navbarUserAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3F7D58&color=fff&size=32&bold=true&rounded=true`;
+                if (navbarUserNameShort) navbarUserNameShort.textContent = displayName;
+                if (dropdownUserNameFull) dropdownUserNameFull.textContent = currentUserHasil.namaPengguna || currentUserHasil.email;
+                if (mobileNavbarUserName) mobileNavbarUserName.textContent = displayName;
+            } else {
+                if (navAuthGuest) navAuthGuest.classList.remove('hidden');
+                if (navAuthUser) navAuthUser.classList.add('hidden');
+                if (mobileNavAuthGuest) mobileNavAuthGuest.classList.remove('hidden');
+                if (mobileNavAuthUser) mobileNavAuthUser.classList.add('hidden');
+            }
+        }
+        updateAuthStateUIHasil();
+
+        if (userProfileButton && userProfileDropdown) {
+            userProfileButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                userProfileDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (userProfileButton && !userProfileButton.contains(event.target) && userProfileDropdown && !userProfileDropdown.contains(event.target)) {
+                    userProfileDropdown.classList.add('hidden');
+                }
+            });
+        }
+        
+        function handleLogoutHasil() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            authTokenHasil = null; 
+            currentUserHasil = null; 
+            updateAuthStateUIHasil(); 
+        }
+
+        if (navbarLogoutButton) navbarLogoutButton.addEventListener('click', handleLogoutHasil);
+        if (mobileNavbarLogoutButton) mobileNavbarLogoutButton.addEventListener('click', handleLogoutHasil);
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                // Karena navbar utama dihilangkan, menu mobile hanya untuk auth
+                // Pastikan hanya auth yang relevan yang tampil di mobile menu
+                updateAuthStateUIHasil(); // Panggil lagi untuk memastikan konsistensi
+            });
+        }
+
+            // === Logika Modal ===
+            const showModal = () => {
+                if (sourceModal) {
+                    sourceModal.classList.remove('hidden');
+                    setTimeout(() => sourceModal.classList.remove('opacity-0'), 10);
+                    setTimeout(() => sourceModal.querySelector('.modal-content').classList.remove('scale-95'), 10);
+                }
+            };
+            const hideModal = () => {
+                 if (sourceModal) {
+                    sourceModal.querySelector('.modal-content').classList.add('scale-95');
+                    sourceModal.classList.add('opacity-0');
+                    setTimeout(() => sourceModal.classList.add('hidden'), 300);
+                }
+            };
+
+            addSafeEventListener(selectSourceButton, 'click', showModal);
+            addSafeEventListener(closeModalButton, 'click', hideModal);
+            addSafeEventListener(sourceModal, 'click', (e) => {
+                if (e.target === sourceModal) hideModal();
+            });
+
+            // === Logika Pemilihan Sumber ===
+            addSafeEventListener(openGalleryButton, 'click', () => {
+                hideModal();
+                if(fileInput) fileInput.click();
+            });
+            addSafeEventListener(openCameraButton, 'click', () => {
+                hideModal();
+                startCamera();
+            });
+            addSafeEventListener(fileInput, 'change', () => handleFileSelect(fileInput.files));
+            
+            // === Logika Kamera ===
+            async function startCamera() {
+                try {
+                    activeStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    if(videoFeed) videoFeed.srcObject = activeStream;
+                    if(initialView) initialView.classList.add('hidden');
+                    if(cameraView) cameraView.classList.remove('hidden');
+                } catch (err) {
+                    showError("Gagal mengakses kamera. Pastikan Anda memberikan izin.");
+                }
+            }
+            function stopCamera() {
+                if (activeStream) activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+            }
+            
+            addSafeEventListener(captureButton, 'click', () => {
+                if (!videoFeed || !imageCanvas) return;
+                const context = imageCanvas.getContext('2d');
+                imageCanvas.width = videoFeed.videoWidth;
+                imageCanvas.height = videoFeed.videoHeight;
+                context.translate(imageCanvas.width, 0);
+                context.scale(-1, 1);
+                context.drawImage(videoFeed, 0, 0, imageCanvas.width, imageCanvas.height);
+                stopCamera();
+                imageCanvas.toBlob(blob => {
+                    const capturedFile = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                    handleFileSelect([capturedFile]);
+                }, 'image/jpeg');
+            });
+
+            addSafeEventListener(cancelCameraButton, 'click', () => {
+                 stopCamera();
+                 resetToInitialView();
+            });
+            
+            // === Logika Penanganan File & Tampilan ===
+            function handleFileSelect(files) {
+                if (!files || files.length === 0) return;
+                const file = files[0];
+                const maxSize = 16 * 1024 * 1024;
+                if (file.size > maxSize) return showError('Ukuran file terlalu besar (Maks. 16MB).');
+                
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    if(previewImage) previewImage.src = e.target.result;
+                    if(fileNameEl) fileNameEl.textContent = file.name;
+                    showPreviewView();
+                }
+                reader.readAsDataURL(file);
+            }
+
+            function showPreviewView() {
+                hideError();
+                if(initialView) initialView.classList.add('hidden');
+                if(cameraView) cameraView.classList.add('hidden');
+                if(previewView) previewView.classList.remove('hidden');
+                if(classifyButtonContainer) classifyButtonContainer.classList.remove('hidden');
+            }
+
+            function resetToInitialView() {
+                stopCamera();
+                selectedFile = null;
+                if(fileInput) fileInput.value = '';
+                if(initialView) initialView.classList.remove('hidden');
+                if(cameraView) cameraView.classList.add('hidden');
+                if(previewView) previewView.classList.add('hidden');
+                if(classifyButtonContainer) classifyButtonContainer.classList.add('hidden');
+            }
+            addSafeEventListener(retakeButton, 'click', resetToInitialView);
+
+            function showError(message) { if(errorMessage) { errorMessage.textContent = message; errorMessage.classList.remove('hidden'); }}
+            function hideError() { if(errorMessage) errorMessage.classList.add('hidden'); }
+
+            // === Logika Klasifikasi ===
+            addSafeEventListener(classifyButton, 'click', async () => {
+                if (!selectedFile) return;
+                if(buttonText) buttonText.textContent = 'Menganalisis...';
+                if(buttonSpinner) buttonSpinner.classList.remove('hidden');
+                if(classifyButton) classifyButton.disabled = true;
+
+                const formData = new FormData();
+                formData.append('image', selectedFile);
+
+                const apiEndpoint = localStorage.getItem('authToken') ? '/api/klasifikasi' : '/api/klasifikasi-guest';
+                const headers = localStorage.getItem('authToken') ? { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } : {};
+
+                try {
+                    const response = await fetch(`http://localhost:5000${apiEndpoint}`, { method: 'POST', headers, body: formData });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.error || 'Terjadi kesalahan server.');
+                    
+                    sessionStorage.setItem('classificationResult', JSON.stringify(result));
+                    if(previewImage) sessionStorage.setItem('imagePreviewUrl', previewImage.src);
+                    window.location.href = './hasil-klasifikasi.html';
+                } catch (error) {
+                    showError(error.message);
+                    if(buttonText) buttonText.textContent = 'Klasifikasi';
+                    if(buttonSpinner) buttonSpinner.classList.add('hidden');
+                    if(classifyButton) classifyButton.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

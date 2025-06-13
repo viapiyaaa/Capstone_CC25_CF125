@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrashGu - Hasil Klasifikasi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .progress-bar-container { background-color: #e5e7eb; border-radius: 9999px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.5s ease-in-out; }
+        
+        /* --- PERUBAHAN CSS: Menghapus warna dinamis progress bar --- */
+        .progress-bar-green { background-color: #22c55e; }
+
+        .category-badge-organik { background-color: #ffedd5; color: #9a3412; }
+        .category-badge-anorganik { background-color: #dcfce7; color: #166534; }
+        .category-badge-residu { background-color: #e2e8f0; color: #475569; }
+
+        /* --- PERUBAHAN CSS: Menambahkan gradasi hijau permanen --- */
+        .gradient-card-green {
+            background-image: linear-gradient(to bottom, #3F7D58, #326748);
+        }
+              html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+              .profile-dropdown {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        margin-top: 0.5rem;
+        z-index: 50; /* Pastikan di atas konten lain */
+      }
+    </style>
+</head>
+<body class="font-sans text-gray-700 bg-[#F5F7FA]">
+    <header class="bg-footer-bg shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center gap-2">
+            <a href="./index.html">
+              <img src="./assets/images/logo.png" alt="TrashGu Logo" class="h-9" />
+            </a>
+          </div>
+          
+          <!-- Menu Pengguna (Login/Daftar atau Dropdown Profil) -->
+          <div class="flex items-center">
+              <div id="nav-auth-guest-hasil" class="flex items-center gap-3 text-sm">
+                <a href="./registrasi.html" class="text-gray-600 hover:text-custom-green font-medium text-xs sm:text-sm">Daftar</a>
+                <a href="./login.html" class="bg-custom-green text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-md font-medium hover:bg-custom-green-darker transition-colors text-xs sm:text-sm">Masuk</a>
+              </div>
+              <div id="nav-auth-user-hasil" class="hidden relative">
+                  <button id="user-profile-button-hasil" type="button" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-custom-green">
+                      <span class="sr-only">Buka menu pengguna</span>
+                      <img class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/A0AEC0/FFFFFF?text=U" alt="User Avatar" id="navbar-user-avatar-hasil">
+                      <span id="navbar-user-name-short-hasil" class="hidden sm:inline-block ml-2 text-gray-700 font-medium">User</span>
+                      <svg class="hidden sm:inline-block ml-1 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                  </button>
+                  <div id="user-profile-dropdown-hasil" class="profile-dropdown hidden origin-top-right w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none py-1">
+                      <a href="./dashboard.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Dashboard</a>
+                      <a href="./klasifikasi.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Klasifikasi Baru</a>
+                      <button id="navbar-logout-button-hasil" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</button>
+                  </div>
+              </div>
+          </div>
+    </header>
+
+
+    <main class="py-12 sm:py-16">
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8 sm:mb-10">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">Hasil Analisis Sampah</h1>
+            </div>
+
+            <div id="result-container" class="p-0">
+                </div>
+
+            <div class="mt-10 text-center">
+                <a href="./klasifikasi.html" class="inline-block bg-[#3F7D58] text-white px-8 py-3 rounded-lg text-base font-semibold hover:bg-[#326748] transition-colors shadow-md hover:shadow-lg">
+                    <i class="fas fa-redo mr-2"></i> Analisis Lagi
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#EFEFEF] text-gray-600 py-6 text-center mt-16 sm:mt-20">
+        <p class="text-xs sm:text-sm">&copy; 2025 TrashGu | CC25-CF125. All rights reserved.</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const resultContainer = document.getElementById('result-container');
+        const resultDataString = sessionStorage.getItem('classificationResult');
+        const imagePreviewUrl = sessionStorage.getItem('imagePreviewUrl');
+
+        if (resultDataString && imagePreviewUrl) {
+            try {
+                const data = JSON.parse(resultDataString);
+                displayResults(data, imagePreviewUrl);
+            } catch (e) {
+                displayError();
+            }
+        } else {
+            displayError();
+        }
+
+        sessionStorage.removeItem('classificationResult');
+        sessionStorage.removeItem('imagePreviewUrl');
+
+        function displayError() {
+            resultContainer.innerHTML = `
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg text-center">
+                    <h2 class="text-xl font-semibold text-red-600 mb-4">Gagal Memuat Hasil</h2>
+                    <p class="text-gray-600">Tidak ada data hasil klasifikasi yang ditemukan.</p>
+                </div>`;
+        }
+
+                   const navAuthGuest = document.getElementById('nav-auth-guest-hasil');
+        const navAuthUser = document.getElementById('nav-auth-user-hasil');
+        const userProfileButton = document.getElementById('user-profile-button-hasil');
+        const userProfileDropdown = document.getElementById('user-profile-dropdown-hasil');
+        const navbarUserAvatar = document.getElementById('navbar-user-avatar-hasil');
+        const navbarUserNameShort = document.getElementById('navbar-user-name-short-hasil');
+        const dropdownUserNameFull = document.getElementById('dropdown-user-name-full-hasil');
+        const navbarLogoutButton = document.getElementById('navbar-logout-button-hasil');
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button-hasil');
+        const mobileMenu = document.getElementById('mobile-menu-hasil');
+        const mobileNavAuthGuest = document.getElementById('mobile-nav-auth-guest-hasil');
+        const mobileNavAuthUser = document.getElementById('mobile-nav-auth-user-hasil');
+        const mobileNavbarUserName = document.getElementById('mobile-navbar-user-name-hasil');
+        const mobileNavbarLogoutButton = document.getElementById('mobile-navbar-logout-button-hasil');
+
+        let authTokenHasil = localStorage.getItem('authToken');
+        let currentUserHasil = null;
+        const currentUserStringHasil = localStorage.getItem('currentUser');
+
+        if (currentUserStringHasil) {
+            try {
+                currentUserHasil = JSON.parse(currentUserStringHasil);
+            } catch (e) {
+                console.error("Gagal parse currentUser dari localStorage (hasil):", e);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                authTokenHasil = null; 
+            }
+        }
+         if (authTokenHasil && !currentUserHasil) { 
+            localStorage.removeItem('authToken');
+            authTokenHasil = null;
+        }
+
+        function updateAuthStateUIHasil() {
+            authTokenHasil = localStorage.getItem('authToken');
+            const storedUserHasil = localStorage.getItem('currentUser');
+            currentUserHasil = storedUserHasil ? JSON.parse(storedUserHasil) : null;
+
+            if (authTokenHasil && currentUserHasil) {
+                if (navAuthGuest) navAuthGuest.classList.add('hidden');
+                if (navAuthUser) navAuthUser.classList.remove('hidden');
+                if (mobileNavAuthGuest) mobileNavAuthGuest.classList.add('hidden');
+                if (mobileNavAuthUser) mobileNavAuthUser.classList.remove('hidden');
+
+                const displayName = currentUserHasil.namaPengguna || currentUserHasil.email.split('@')[0];
+                if (navbarUserAvatar) navbarUserAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3F7D58&color=fff&size=32&bold=true&rounded=true`;
+                if (navbarUserNameShort) navbarUserNameShort.textContent = displayName;
+                if (dropdownUserNameFull) dropdownUserNameFull.textContent = currentUserHasil.namaPengguna || currentUserHasil.email;
+                if (mobileNavbarUserName) mobileNavbarUserName.textContent = displayName;
+            } else {
+                if (navAuthGuest) navAuthGuest.classList.remove('hidden');
+                if (navAuthUser) navAuthUser.classList.add('hidden');
+                if (mobileNavAuthGuest) mobileNavAuthGuest.classList.remove('hidden');
+                if (mobileNavAuthUser) mobileNavAuthUser.classList.add('hidden');
+            }
+        }
+        updateAuthStateUIHasil();
+
+        if (userProfileButton && userProfileDropdown) {
+            userProfileButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                userProfileDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', (event) => {
+                if (userProfileButton && !userProfileButton.contains(event.target) && userProfileDropdown && !userProfileDropdown.contains(event.target)) {
+                    userProfileDropdown.classList.add('hidden');
+                }
+            });
+        }
+        
+        function handleLogoutHasil() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            authTokenHasil = null; 
+            currentUserHasil = null; 
+            updateAuthStateUIHasil(); 
+        }
+
+        if (navbarLogoutButton) navbarLogoutButton.addEventListener('click', handleLogoutHasil);
+        if (mobileNavbarLogoutButton) mobileNavbarLogoutButton.addEventListener('click', handleLogoutHasil);
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                // Karena navbar utama dihilangkan, menu mobile hanya untuk auth
+                // Pastikan hanya auth yang relevan yang tampil di mobile menu
+                updateAuthStateUIHasil(); // Panggil lagi untuk memastikan konsistensi
+            });
+        }
+
+        function displayResults(data, imageUrl) {
+            const mainCategory = data.kategori ? data.kategori.toUpperCase() : 'RESIDU';
+            const specificCategory = data.kategori_spesifik ? data.kategori_spesifik.replace(/\b\w/g, l => l.toUpperCase()) : 'Tidak Diketahui';
+            const accuracy = data.akurasi ? (data.akurasi * 100) : 0;
+            
+            // --- PERBAIKAN LOGIKA SARAN PENANGANAN ---
+            let suggestions = data.saran_penanganan;
+            // Jika saran bukan array (misal: string), ubah menjadi array dengan satu elemen
+            if (suggestions && !Array.isArray(suggestions)) {
+                suggestions = [suggestions];
+            }
+            const suggestionsHTML = (suggestions && suggestions.length > 0)
+                ? suggestions.map(saran => `<li class="flex items-start"><span class="mr-2 mt-1">&#8226;</span><span>${saran}</span></li>`).join('')
+                : '<li>Saran penanganan untuk kategori ini belum tersedia.</li>'; // Fallback message
+            
+            // Tentukan kelas badge
+            let badgeClass = 'category-badge-residu';
+            if (mainCategory === 'ORGANIK') badgeClass = 'category-badge-organik';
+            else if (mainCategory === 'ANORGANIK') badgeClass = 'category-badge-anorganik';
+
+            const resultHTML = `
+                <div class="gradient-card-green text-white p-6 sm:p-8 rounded-2xl shadow-lg flex flex-col md:flex-row gap-8">
+                    <div class="w-full md:w-5/12">
+                        <div class="bg-white/20 rounded-lg overflow-hidden aspect-square flex items-center justify-center">
+                            <img src="${imageUrl}" alt="Gambar Sampah" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-7/12">
+                        <span class="inline-block px-3 py-1 text-sm font-semibold rounded-full ${badgeClass}">${mainCategory}</span>
+                        <h2 class="text-4xl font-bold mt-2 mb-6">${specificCategory}</h2>
+
+                        <div class="mb-6">
+                            <p class="text-sm font-medium text-slate-200 mb-2">Tingkat Akurasi</p>
+                            <div class="flex items-center gap-4">
+                                <div class="w-full progress-bar-container h-4 bg-white/30">
+                                    <div class="progress-bar progress-bar-green" style="width: ${accuracy.toFixed(0)}%;"></div>
+                                </div>
+                                <span class="text-lg font-semibold">${accuracy.toFixed(0)}%</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-medium text-slate-200 mb-2">Saran Penanganan</p>
+                            <ul class="text-sm text-slate-100 space-y-2">
+                                ${suggestionsHTML}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultContainer.innerHTML = resultHTML;
+        }
+    });
+    </script>
+</body>
+</html>

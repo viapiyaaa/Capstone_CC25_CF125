@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrashGu - Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-item.active {
+            background-color: #16A34A;
+            color: white;
+        }
+        .sidebar-item.active i {
+            color: white;
+        }
+        #dashboard-sidebar, .modal-overlay, .modal-content {
+            transition: all 0.3s ease-in-out;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+    <div class="relative min-h-screen md:flex">
+        <!-- Overlay untuk mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside id="dashboard-sidebar" class="bg-white w-72 text-gray-800 flex flex-col fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 z-30 shadow-lg">
+            <div class="p-6 flex items-center gap-4 border-b border-gray-100">
+                <img src="./assets/images/logo.png" alt="TrashGu Logo" class="h-10" />
+            </div>
+            <nav class="flex-grow p-4 space-y-2">
+                <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-dashboard">
+                    <i class="fas fa-home fa-fw mr-3 w-5"></i><span>Dashboard</span>
+                </a>
+                <a href="./klasifikasi.html" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100">
+                    <i class="fas fa-plus-circle fa-fw mr-3 w-5"></i><span>Klasifikasi Baru</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-riwayat">
+                    <i class="fas fa-history fa-fw mr-3 w-5"></i><span>Riwayat</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-statistik">
+                    <i class="fas fa-chart-pie fa-fw mr-3 w-5"></i><span>Statistik</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-pengaturan">
+                    <i class="fas fa-cog fa-fw mr-3 w-5"></i><span>Pengaturan</span>
+                </a>
+            </nav>
+            <div class="p-4">
+                <a href="#" id="logout-button" class="flex items-center py-3 px-4 rounded-lg font-semibold text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
+                    <i class="fas fa-sign-out-alt fa-fw mr-3 w-5"></i><span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col max-h-screen overflow-hidden">
+             <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-10 p-4 flex items-center justify-between border-b">
+                <button id="sidebar-toggle-button" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+                <div class="flex items-center gap-4 ml-auto">
+                    <span class="text-sm text-gray-700 hidden sm:block">Halo, <strong id="user-name-placeholder">User</strong>!</span>
+                    <div class="relative">
+                        <button id="user-menu-button" class="focus:outline-none"><img class="h-9 w-9 rounded-full object-cover" src="https://placehold.co/40x40" alt="User avatar" id="navbar-user-avatar"></button>
+                        <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 py-1">
+                            <a href="#" data-page="page-pengaturan" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            <a href="#" id="logout-button-dropdown" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                <!-- Halaman Dashboard -->
+                <div id="page-dashboard" class="page-content">
+                     <h1 class="text-3xl font-bold text-gray-800 mb-2" id="dashboard-greeting">Halo, User!</h1>
+                    <p class="text-gray-500 mb-8">Ringkasan Statistik Anda</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+                                <div class="bg-white p-5 rounded-xl shadow-sm flex items-center border border-gray-200">
+                                    <div class="bg-blue-100 text-blue-500 p-3 rounded-lg"><i class="fas fa-box-open fa-lg"></i></div>
+                                    <div class="ml-4">
+                                        <h3 class="text-gray-500 text-sm">Total Klasifikasi</h3>
+                                        <p id="stats-total" class="text-2xl font-bold">0</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl shadow-sm flex items-center border border-gray-200">
+                                    <div class="bg-green-100 text-green-500 p-3 rounded-lg"><i class="fas fa-leaf fa-lg"></i></div>
+                                    <div class="ml-4">
+                                        <h3 class="text-gray-500 text-sm">Sampah Organik</h3>
+                                        <p id="stats-organik" class="text-2xl font-bold">0</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl shadow-sm flex items-center border border-gray-200">
+                                    <div class="bg-yellow-100 text-yellow-500 p-3 rounded-lg"><i class="fas fa-recycle fa-lg"></i></div>
+                                    <div class="ml-4">
+                                        <h3 class="text-gray-500 text-sm">Sampah Anorganik</h3>
+                                        <p id="stats-anorganik" class="text-2xl font-bold">0</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl shadow-sm flex items-center border border-gray-200">
+                                    <div class="bg-red-100 text-red-500 p-3 rounded-lg"><i class="fas fa-trash-alt fa-lg"></i></div>
+                                    <div class="ml-4">
+                                        <h3 class="text-gray-500 text-sm">Sampah Residu</h3>
+                                        <p id="stats-residu" class="text-2xl font-bold">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                <h3 class="text-xl font-semibold mb-4 text-gray-800">Distribusi Kategori Sampah</h3>
+                                <div class="h-80 md:h-96"><canvas id="pie-chart-dashboard"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <div class="bg-white p-6 rounded-xl shadow-sm h-full border border-gray-200 flex flex-col">
+                                <h3 class="text-xl font-semibold mb-4 text-gray-800">Aktivitas Terbaru</h3>
+                                <div id="recent-activity-list" class="space-y-2 flex-grow">
+                                    <p id="loading-history" class="text-gray-500 text-center p-4">Memuat riwayat...</p>
+                                </div>
+                                <a href="#" data-page="page-riwayat" id="view-all-activities" class="w-full block text-center mt-6 text-sm text-green-600 font-semibold py-2 rounded-lg hover:underline transition-colors">Lihat Semua Aktivitas</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Halaman Riwayat -->
+                <div id="page-riwayat" class="page-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Semua Riwayat Klasifikasi</h2>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div id="loading-all-history" class="text-gray-500 py-8 text-center">Memuat riwayat...</div>
+                        <div id="all-history-items-container" class="divide-y divide-gray-100"></div>
+                    </div>
+                </div>
+
+                <!-- Halaman Statistik -->
+                <div id="page-statistik" class="page-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Statistik Klasifikasi</h2>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Ringkasan Total</h3>
+                     <div id="statistics-summary-clone" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-semibold mb-4">Distribusi Kategori Sampah</h3>
+                        <div class="h-96 w-full"><canvas id="pie-chart-statistik"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Halaman Pengaturan -->
+                <div id="page-pengaturan" class="page-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengaturan Akun</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                                <h3 class="text-lg font-semibold text-center border-b pb-3 mb-4">Profil Pengguna</h3>
+                                <div class="relative w-32 h-32 mx-auto mb-4">
+                                    <img id="profile-avatar" src="https://placehold.co/128x128" alt="Foto Profil" class="w-32 h-32 rounded-full object-cover border-4 border-gray-200">
+                                    <label for="avatar-upload" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white text-xs rounded-full opacity-0 hover:opacity-100 cursor-pointer transition-opacity">
+                                        Ganti Foto
+                                    </label>
+                                    <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                                </div>
+                                <div id="avatar-upload-message" class="text-xs text-center mb-4"></div>
+                                <div class="space-y-4 text-center">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-500">Nama Pengguna</label>
+                                        <p id="profile-username" class="mt-1 font-semibold text-lg">-</p>
+                                    </div>
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-500">Email</label>
+                                        <p id="profile-email" class="mt-1">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                                <h3 class="text-lg font-semibold border-b pb-3 mb-4">Ubah Kata Sandi</h3>
+                                <!-- PERBAIKAN FORM KATA SANDI -->
+                                <form id="changePasswordForm" class="space-y-4">
+                                    <div>
+                                        <label for="old-password" class="block text-sm font-medium text-gray-700">Kata Sandi Lama</label>
+                                        <input type="password" id="old-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
+                                     <div>
+                                        <label for="new-password" class="block text-sm font-medium text-gray-700">Kata Sandi Baru</label>
+                                        <input type="password" id="new-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
+                                     <div>
+                                        <label for="confirm-password" class="block text-sm font-medium text-gray-700">Konfirmasi Kata Sandi</label>
+                                        <input type="password" id="confirm-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
+                                    <div id="password-change-message" class="text-sm"></div>
+                                    <div class="text-right">
+                                        <button type="submit" id="submit-password-change" class="py-2 px-4 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700">Simpan</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="delete-confirmation-modal" class="modal-overlay fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50 opacity-0">
+        <div class="modal-content bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform scale-95 text-center">
+            <h3 class="text-lg font-bold text-gray-900">Hapus Riwayat?</h3>
+            <p class="text-sm text-gray-500 my-4">Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin melanjutkan?</p>
+            <div class="flex justify-center gap-4">
+                <button id="modal-cancel-delete" class="px-4 py-2 rounded-md text-sm font-medium bg-gray-200 hover:bg-gray-300">Batal</button>
+                <button id="modal-confirm-delete" class="px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lihat Detail -->
+    <div id="view-detail-modal" class="modal-overlay fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50 opacity-0">
+        <div id="detail-content-wrapper" class="modal-content bg-green-700 text-white rounded-lg shadow-xl w-full max-w-2xl transform scale-95 flex flex-col md:flex-row overflow-hidden">
+            <!-- Konten detail dimuat oleh JS -->
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const API_BASE_URL = 'https://PebriA.pythonanywhere.com';
+        const sidebar = document.getElementById('dashboard-sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle-button');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const navLinks = document.querySelectorAll('.sidebar-item');
+        const contentPages = document.querySelectorAll('.page-content');
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenuDropdown = document.getElementById('user-menu-dropdown');
+        window.charts = {};
+        let allHistories = [];
+
+        // --- (Blok Navigasi & UI tidak berubah) ---
+        function switchPage(pageId) {
+            contentPages.forEach(page => page.classList.add('hidden'));
+            document.getElementById(pageId)?.classList.remove('hidden');
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.page === pageId);
+            });
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            }
+        }
+        navLinks.forEach(link => {
+            if (link.dataset.page) {
+                link.addEventListener('click', (e) => { 
+                    e.preventDefault(); 
+                    switchPage(link.dataset.page); 
+                });
+            }
+        });
+        const viewAllActivitiesBtn = document.getElementById('view-all-activities');
+        if(viewAllActivitiesBtn) {
+            viewAllActivitiesBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchPage('page-riwayat');
+            });
+        }
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        };
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+        if (userMenuButton) {
+            userMenuButton.addEventListener('click', () => userMenuDropdown.classList.toggle('hidden'));
+            document.addEventListener('click', (e) => {
+                if (!userMenuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                    userMenuDropdown.classList.add('hidden');
+                }
+            });
+            userMenuDropdown.querySelector('a[data-page]')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                userMenuDropdown.classList.add('hidden');
+                switchPage(e.target.dataset.page);
+            });
+        }
+        function handleLogout(e) { 
+            e.preventDefault(); 
+            localStorage.clear(); 
+            window.location.href = './login.html';
+        }
+        document.getElementById('logout-button').addEventListener('click', handleLogout);
+        document.getElementById('logout-button-dropdown').addEventListener('click', handleLogout);
+
+        // --- (Blok Fetch Data tidak berubah) ---
+        async function fetchData() {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) { handleLogout(new Event('click')); return; }
+            try {
+                const [statsRes, historyRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/statistics`, { headers: { 'Authorization': `Bearer ${authToken}` }}),
+                    fetch(`${API_BASE_URL}/api/history`, { headers: { 'Authorization': `Bearer ${authToken}` }})
+                ]);
+                if (statsRes.status === 401 || historyRes.status === 401) { handleLogout(new Event('click')); return; }
+                if (!statsRes.ok) throw new Error(`Gagal memuat statistik: ${statsRes.statusText}`);
+                if (!historyRes.ok) throw new Error(`Gagal memuat riwayat: ${historyRes.statusText}`);
+                const statsData = await statsRes.json();
+                const historyData = await historyRes.json();
+                allHistories = historyData.histories || [];
+                updateUI(statsData, allHistories);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // --- (Blok Update UI tidak berubah) ---
+        function updateUI(statsData, histories) {
+            updateUserUI();
+            updateStatsUI(statsData);
+            updateRecentHistoryUI(histories);
+            updateAllHistoryUI(histories);
+            renderPieChart('pie-chart-dashboard', statsData.category_counts);
+            renderPieChart('pie-chart-statistik', statsData.category_counts);
+        }
+
+        // --- (Blok Update User UI tidak berubah) ---
+        function updateUserUI() {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) return;
+                const displayName = currentUser.namaPengguna || 'User';
+                document.getElementById('user-name-placeholder').textContent = displayName.split(' ')[0];
+                document.getElementById('dashboard-greeting').textContent = `Halo, ${displayName}!`;
+                document.getElementById('profile-username').textContent = displayName;
+                document.getElementById('profile-email').textContent = currentUser.email || '-';
+                const savedAvatar = localStorage.getItem('userAvatar');
+                const avatarSrc = savedAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=16A34A&color=fff&bold=true`;
+                document.getElementById('navbar-user-avatar').src = avatarSrc; 
+                document.getElementById('profile-avatar').src = avatarSrc;
+            } catch(e) { console.error("Could not parse user data from localStorage", e); }
+        }
+
+        // --- (Blok Update Stats UI tidak berubah) ---
+        function updateStatsUI(data) {
+             if (data && data.total_classifications > 0) {
+                document.getElementById('stats-total').textContent = data.total_classifications;
+                document.getElementById('stats-organik').textContent = data.category_counts.ORGANIK || 0;
+                document.getElementById('stats-anorganik').textContent = data.category_counts.ANORGANIK || 0;
+                document.getElementById('stats-residu').textContent = data.category_counts.RESIDU || 0;
+                const statsCloneContainer = document.getElementById('statistics-summary-clone');
+                const originalCards = document.querySelectorAll('#page-dashboard .grid.grid-cols-1.sm\\:grid-cols-2 > div');
+                if (statsCloneContainer) {
+                    statsCloneContainer.innerHTML = '';
+                    originalCards.forEach(card => {
+                        statsCloneContainer.appendChild(card.cloneNode(true));
+                    });
+                }
+             }
+        }
+        
+        // --- (Blok Update Recent History UI tidak berubah) ---
+        function updateRecentHistoryUI(histories) {
+             const container = document.getElementById('recent-activity-list');
+            if (!container) return;
+            container.innerHTML = '';
+            if (!histories || histories.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 p-4 text-center">Belum ada aktivitas.</p>';
+                return;
+            }
+            histories.slice(0, 3).forEach(item => {
+                const accuracy = (item.accuracy * 100).toFixed(0);
+                const categoryColor = item.classification_result === 'ORGANIK' ? 'text-orange-600' : 'text-gray-600';
+                const accuracyColor = accuracy > 85 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+
+                const itemEl = document.createElement('div');
+                itemEl.className = 'flex items-start gap-4 py-3 border-b last:border-b-0'; 
+                itemEl.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-800" title="${item.filename || 'Gambar'}">
+                           ${item.filename || 'Gambar'} - <span class="font-bold ${categoryColor}">${item.classification_result}</span>
+                        </p>
+                        <p class="text-sm text-gray-500 mt-1">${new Date(item.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour:'2-digit', minute: '2-digit'})}</p>
+                    </div>
+                    <div class="ml-auto flex-shrink-0">
+                        <span class="font-bold text-xs py-1 px-2 rounded-full ${accuracyColor}">${accuracy}%</span>
+                    </div>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+        
+        // --- PERBAIKAN Tampilan Semua Riwayat (Responsif) ---
+        function updateAllHistoryUI(histories) {
+            const container = document.getElementById('all-history-items-container');
+            const loader = document.getElementById('loading-all-history');
+            if(!container || !loader) return;
+            container.innerHTML = '';
+            if (!histories || histories.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada riwayat klasifikasi.</p>';
+                loader.classList.add('hidden');
+                return;
+            }
+            histories.forEach(item => {
+                const accuracy = (item.accuracy * 100).toFixed(0);
+                const badgeColor = accuracy > 85 ? 'bg-green-100 text-green-700' : accuracy > 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+                const itemEl = document.createElement('div');
+                itemEl.className = 'p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 hover:bg-gray-50';
+                itemEl.innerHTML = `
+                    <div class="flex items-center gap-4 w-full sm:w-auto">
+                        <img src="${item.image_url ? API_BASE_URL + item.image_url : 'https://placehold.co/48x48'}" alt="${item.filename}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-800 truncate" title="${item.filename || 'Gambar'}">${item.filename || 'Gambar'}</p>
+                            <p class="text-xs text-gray-400 mt-1">${new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+                        <span class="font-bold text-sm py-1 px-3 rounded-full ${badgeColor}">${accuracy}%</span>
+                        <span class="font-semibold text-sm w-24 text-center">${item.classification_result}</span>
+                        <button title="Lihat Detail" class="view-button text-gray-400 hover:text-blue-500" data-history-id="${item.id}"><i class="fas fa-eye fa-lg"></i></button>
+                        <button title="Hapus" class="delete-button text-gray-400 hover:text-red-500" data-history-id="${item.id}"><i class="fas fa-trash-alt fa-lg"></i></button>
+                    </div>`;
+                container.appendChild(itemEl);
+            });
+            loader.classList.add('hidden');
+        }
+
+        // --- FUNGSI MODAL DIPERBARUI TOTAL ---
+        const deleteModal = document.getElementById('delete-confirmation-modal');
+        const viewModal = document.getElementById('view-detail-modal');
+        let historyIdToAction = null;
+
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.modal-content').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal(modal) {
+            modal.querySelector('.modal-content').classList.add('scale-95');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+        
+        function openViewModal(historyId) {
+            const item = allHistories.find(h => h.id == historyId);
+            if (!item) return;
+            const accuracy = (item.accuracy * 100);
+            const detailWrapper = document.getElementById('detail-content-wrapper');
+            detailWrapper.innerHTML = `
+                <div class="w-full md:w-1/2 flex-shrink-0 bg-gray-200">
+                    <img src="${item.image_url ? API_BASE_URL + item.image_url : 'https://placehold.co/400x400'}" class="w-full h-full object-contain">
+                </div>
+                <div class="p-6 flex flex-col">
+                    <span class="text-xs font-bold uppercase tracking-wider bg-white/20 text-white py-1 px-2 rounded-full self-start">${item.classification_result || 'N/A'}</span>
+                    <h2 class="text-4xl font-bold mt-2">${item.specific_waste_name || 'Nama Sampah'}</h2>
+                    <p class="text-sm text-gray-300 mt-1">Waktu: ${new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}</p>
+                    <div class="mt-6">
+                        <label class="font-semibold">Tingkat Akurasi</label>
+                        <div class="w-full bg-white/30 rounded-full h-2.5 mt-2">
+                            <div class="bg-white h-2.5 rounded-full" style="width: ${accuracy}%"></div>
+                        </div>
+                        <p class="text-right text-sm font-bold">${accuracy.toFixed(0)}%</p>
+                    </div>
+                    <div class="mt-4 flex-grow">
+                        <label class="font-semibold">Saran Penanganan</label>
+                        <p class="text-sm text-gray-200 mt-2">${item.handling_suggestion || 'Tidak ada saran penanganan.'}</p>
+                    </div>
+                    <button id="modal-close-detail" class="mt-6 bg-white text-green-700 font-bold py-2 px-4 rounded-lg self-end hover:bg-gray-200">Tutup</button>
+                </div>
+            `;
+            detailWrapper.querySelector('#modal-close-detail').addEventListener('click', () => closeModal(viewModal));
+            openModal(viewModal);
+        }
+
+        document.getElementById('modal-cancel-delete').addEventListener('click', () => closeModal(deleteModal));
+        
+        async function handleDelete() {
+            if (!historyIdToAction) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/history/${historyIdToAction}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                });
+                if (!response.ok) throw new Error('Gagal menghapus riwayat.');
+                fetchData();
+            } catch (error) { console.error("Error deleting history:", error); } 
+            finally { 
+                closeModal(deleteModal); 
+            }
+        }
+        document.getElementById('modal-confirm-delete').addEventListener('click', handleDelete);
+        
+        const historyContainer = document.getElementById('all-history-items-container');
+        if (historyContainer) {
+            historyContainer.addEventListener('click', (event) => {
+                const deleteButton = event.target.closest('.delete-button');
+                const viewButton = event.target.closest('.view-button');
+                if (deleteButton) {
+                    historyIdToAction = deleteButton.dataset.historyId;
+                    openModal(deleteModal);
+                }
+                if (viewButton) {
+                    openViewModal(viewButton.dataset.historyId);
+                }
+            });
+        }
+
+        // --- PERBAIKAN: LOGIKA UNGGAH FOTO & GANTI PASSWORD ---
+        const avatarUploadInput = document.getElementById('avatar-upload');
+        const avatarUploadMessage = document.getElementById('avatar-upload-message');
+
+        avatarUploadInput.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            avatarUploadMessage.textContent = 'Mengunggah...';
+            avatarUploadMessage.className = 'text-xs text-center mb-4 text-gray-500';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/user/avatar`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` },
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (!response.ok) throw new Error(result.error || 'Gagal mengunggah foto.');
+
+                const newAvatarUrl = API_BASE_URL + result.avatarUrl;
+                document.getElementById('profile-avatar').src = newAvatarUrl;
+                document.getElementById('navbar-user-avatar').src = newAvatarUrl;
+                localStorage.setItem('userAvatar', newAvatarUrl); 
+                
+                avatarUploadMessage.textContent = 'Foto profil berhasil diperbarui!';
+                avatarUploadMessage.className = 'text-xs text-center mb-4 text-green-600';
+
+            } catch (error) {
+                console.error('Upload avatar error:', error);
+                avatarUploadMessage.textContent = error.message;
+                avatarUploadMessage.className = 'text-xs text-center mb-4 text-red-600';
+            }
+        });
+
+        const passwordForm = document.getElementById('changePasswordForm');
+        const passwordMessage = document.getElementById('password-change-message');
+
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const oldPassword = document.getElementById('old-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                passwordMessage.textContent = 'Konfirmasi kata sandi baru tidak cocok.';
+                passwordMessage.className = 'text-sm text-red-600';
+                return;
+            }
+
+            passwordMessage.textContent = 'Menyimpan...';
+            passwordMessage.className = 'text-sm text-gray-500';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/user/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Gagal mengubah kata sandi.');
+
+                passwordMessage.textContent = 'Kata sandi berhasil diubah!';
+                passwordMessage.className = 'text-sm text-green-600';
+                passwordForm.reset();
+
+            } catch (error) {
+                console.error('Password change error:', error);
+                passwordMessage.textContent = error.message;
+                passwordMessage.className = 'text-sm text-red-600';
+            }
+        });
+
+        // --- (Blok Render Chart tidak berubah) ---
+        function renderPieChart(canvasId, categoryCounts) {
+           const ctx = document.getElementById(canvasId)?.getContext('2d');
+            if (!ctx) return;
+            if (window.charts[canvasId]) window.charts[canvasId].destroy();
+            const data = {
+                labels: ['Organik', 'Anorganik', 'Residu'],
+                datasets: [{
+                    data: [categoryCounts.ORGANIK || 0, categoryCounts.ANORGANIK || 0, categoryCounts.RESIDU || 0],
+                    backgroundColor: ['#F97316', '#3B82F6', '#6B7280'],
+                    borderColor: '#FFFFFF', 
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            };
+            window.charts[canvasId] = new Chart(ctx, {
+                type: 'doughnut', 
+                data: data, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '70%',
+                    plugins: { 
+                        legend: { 
+                            position: 'top', 
+                            labels: { padding: 20, font: { size: 14, family: 'Poppins' } }
+                        } 
+                    } 
+                }
+            });
+        }
+        
+        // --- (Blok Inisialisasi tidak berubah) ---
+        function initializeApp() {
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            if (!authToken || !currentUser) {
+                window.location.href = './login.html';
+                return;
+            }
+            switchPage('page-dashboard');
+            fetchData();
+        }
+
+        initializeApp();
+    });
+    </script>
+</body>
+</html>
