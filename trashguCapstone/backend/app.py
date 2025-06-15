@@ -22,7 +22,7 @@ import numpy as np
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {
     "origins": [
-        "https://trashgu.ivanrajwa.my.id",
+        "https://trashgu.my.id",
         "http://localhost:57304",
         "http://192.168.100.14:57304",
     ]
