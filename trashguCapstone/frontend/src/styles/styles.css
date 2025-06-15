@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+*{
+  scroll-behavior: smooth;
+}
+
 /* Anda bisa menambahkan custom CSS lain di sini jika diperlukan */
 body {
   /* Contoh custom font jika diperlukan, pastikan font sudah diimpor atau tersedia */
@@ -19,4 +24,9 @@ body {
 
 .gradient-card-jelas {
   background-image: linear-gradient(to bottom, #3F7D58, #2c553c); /* Dari custom-green ke variasi yang sedikit lebih gelap lagi */
+}
+
+.nav-link.active {
+  color: #3F7D58 !important;
+  font-weight: bold;
 }

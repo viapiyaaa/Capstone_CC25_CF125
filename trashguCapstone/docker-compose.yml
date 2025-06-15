@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    container_name: trashgu-backend
+    volumes:
+      - ./backend/instance/uploads:/app/instance/uploads
+      - ./backend/instance/trashgu.db:/app/instance/trashgu.db
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: trashgu-frontend
+    ports:
+      - "57304:3000"
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TrashGu - Hasil Klasifikasi</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         .progress-bar-container { background-color: #e5e7eb; border-radius: 9999px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.5s ease-in-out; }
@@ -39,7 +40,7 @@ main {
       }
     </style>
 </head>
-<body class="font-sans text-gray-700 bg-[#F5F7FA]">
+<body class="font-poppins text-customText bg-[#F5F7FA]">
     <header class="bg-footer-bg shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <!-- Logo -->
@@ -66,8 +67,7 @@ main {
                   </button>
                   <div id="user-profile-dropdown-hasil" class="profile-dropdown hidden origin-top-right w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none py-1">
                       <a href="./dashboard.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Dashboard</a>
-                      <a href="./klasifikasi.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Klasifikasi Baru</a>
-                      <button id="navbar-logout-button-hasil" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</button>
+                      <a href="./index.html" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</a>
                   </div>
               </div>
           </div>
@@ -85,7 +85,7 @@ main {
 
             <div class="mt-10 text-center">
                 <a href="./klasifikasi.html" class="inline-block bg-[#3F7D58] text-white px-8 py-3 rounded-lg text-base font-semibold hover:bg-[#326748] transition-colors shadow-md hover:shadow-lg">
-                    <i class="fas fa-redo mr-2"></i> Analisis Lagi
+                    <i class="fas fa-redo mr-2"></i> Klasifikasi Kembali
                 </a>
             </div>
         </section>

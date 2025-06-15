@@ -14,7 +14,17 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "dist"),
     },
+    host: '0.0.0.0',
+    allowedHosts: 'all',
     port: 3000,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://trashgu-backend:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    ],
     open: true,
     historyApiFallback: true,
   },

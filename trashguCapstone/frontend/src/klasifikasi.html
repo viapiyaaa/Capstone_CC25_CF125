@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TrashGu - Klasifikasi Sampah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         .modal-overlay {
@@ -39,7 +40,7 @@ main {
     </style>
 </head>
 
-<body class="font-sans text-gray-700 bg-[#F5F7FA]">
+<body class="font-poppins text-customText bg-[#F5F7FA]">
     <header class="bg-footer-bg shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <!-- Logo -->
@@ -51,23 +52,18 @@ main {
           
           <!-- Menu Pengguna (Login/Daftar atau Dropdown Profil) -->
           <div class="flex items-center">
-              <div id="nav-auth-guest-hasil" class="flex items-center gap-3 text-sm">
-                <a href="./registrasi.html" class="text-gray-600 hover:text-custom-green font-medium text-xs sm:text-sm">Daftar</a>
-                <a href="./login.html" class="bg-custom-green text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-md font-medium hover:bg-custom-green-darker transition-colors text-xs sm:text-sm">Masuk</a>
-              </div>
               <div id="nav-auth-user-hasil" class="hidden relative">
                   <button id="user-profile-button-hasil" type="button" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-custom-green">
                       <span class="sr-only">Buka menu pengguna</span>
                       <img class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/A0AEC0/FFFFFF?text=U" alt="User Avatar" id="navbar-user-avatar-hasil">
-                      <span id="navbar-user-name-short-hasil" class="hidden sm:inline-block ml-2 text-gray-700 font-medium">User</span>
-                      <svg class="hidden sm:inline-block ml-1 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <span id="navbar-user-name-short-hasil" class="hidden sm:inline-block ml-2 font-normal">User</span>
+                      <svg class="hidden sm:inline-block ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                       </svg>
                   </button>
                   <div id="user-profile-dropdown-hasil" class="profile-dropdown hidden origin-top-right w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none py-1">
-                      <a href="./dashboard.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Dashboard</a>
-                      <a href="./klasifikasi.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-slate-100 hover:text-custom-green">Klasifikasi Baru</a>
-                      <button id="navbar-logout-button-hasil" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</button>
+                      <a href="./dashboard.html" class="block px-4 py-2 text-sm hover:bg-slate-100 hover:text-custom-green">Dashboard</a>
+                      <a href="./index.html" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700">Logout</a>
                   </div>
               </div>
           </div>
@@ -77,8 +73,10 @@ main {
         <section class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-lg">
                 <div class="text-center mb-6">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Klasifikasi Sampah</h1>
-                    <p class="text-sm text-gray-500 mt-2">Unggah gambar sampah untuk mengetahui kategorinya.</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold">Sistem Klasifikasi Sampah dengan Articial Intelligence</h1>
+                    <p class="text-sm mt-2 font-normal">Unggah gambar sampah untuk mengidentifikasi 10 kategori sampah 
+                        <br> secara otomatis menggunakan teknologi AI
+                    </p>
                 </div>
 
                                 <!-- === PENAMBAHAN BARU: KOTAK TIPS PENGGUNA === -->
@@ -86,7 +84,7 @@ main {
                     <i class="fas fa-lightbulb mt-1 text-emerald-500 fa-fw"></i>
                     <div>
                         <h4 class="font-semibold">Tips untuk Hasil Terbaik:</h4>
-                        <ul class="list-disc list-inside mt-1 text-emerald-700">
+                        <ul class="font-normal list-disc list-inside mt-1 text-emerald-700">
                             <li>Posisikan objek sampah di tengah gambar.</li>
                             <li>Pastikan pencahayaan cukup dan hindari bayangan.</li>
                             <li>Gunakan latar belakang yang kontras dan tidak ramai.</li>
@@ -97,9 +95,9 @@ main {
 
                 <div id="initial-view">
                     <div class="mt-4 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                        <button id="select-source-button" class="mt-6 w-full sm:w-auto inline-flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#3F7D58] hover:bg-[#326748]">
-                            Pilih Sumber Gambar
+                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                        <button id="select-source-button" class="mt-6 w-full sm:w-auto inline-flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-sm text-base font-semibold text-white bg-[#3F7D58] hover:bg-[#326748]">
+                            Analisis Gambar
                         </button>
                     </div>
                 </div>
@@ -113,13 +111,13 @@ main {
                         <button id="capture-button" class="px-6 py-2.5 bg-red-600 text-white font-medium text-sm rounded-full shadow-md hover:bg-red-700">
                             <i class="fas fa-camera"></i> Ambil Gambar
                         </button>
-                         <button id="cancel-camera-button" class="ml-2 px-4 py-2 bg-gray-200 text-gray-700 text-xs font-semibold rounded hover:bg-gray-300">Batal</button>
+                         <button id="cancel-camera-button" class="ml-2 px-4 py-2 bg-gray-200 text-xs font-semibold rounded hover:bg-gray-300">Batal</button>
                     </div>
                 </div>
                 
                 <div id="preview-view" class="hidden my-4 text-center">
                     <img id="image-preview" src="#" alt="Preview Gambar" class="max-h-64 mx-auto rounded-md shadow-md" />
-                    <p class="mt-2 text-sm text-gray-600">Nama File: <span id="file-name" class="font-semibold"></span></p>
+                    <p class="mt-2 text-sm">Nama File: <span id="file-name" class="font-semibold"></span></p>
                     <div class="mt-4">
                         <button id="retake-button" class="px-4 py-2 bg-gray-600 text-white text-xs font-semibold rounded hover:bg-gray-700">
                             <i class="fas fa-sync-alt mr-2"></i> Ganti Gambar
@@ -132,7 +130,7 @@ main {
 
                 <div id="classify-button-container" class="mt-8 hidden">
                     <button id="classify-button" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#3F7D58] hover:bg-[#326748]">
-                        <span id="button-text">Klasifikasi</span>
+                        <span id="button-text">Analisis Gambar</span>
                         <svg id="button-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                     </button>
                 </div>
@@ -143,22 +141,20 @@ main {
     <div id="source-modal" class="modal-overlay fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden opacity-0">
         <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-sm transform scale-95">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-800">Pilih Sumber Gambar</h3>
+                <h3 class="text-xl font-semibold">Pilih Sumber Gambar</h3>
                 <button id="close-modal-button" class="text-gray-400 hover:text-gray-600">&times;</button>
             </div>
             <div class="space-y-4">
-                <button id="open-camera-button" class="w-full flex items-center justify-center gap-3 py-3 px-4 text-gray-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
+                <button id="open-camera-button" class="font-normal w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-100 hover:bg-slate-200 rounded-lg">
                     <i class="fas fa-camera"></i> Buka Kamera
                 </button>
-                <button id="open-gallery-button" class="w-full flex items-center justify-center gap-3 py-3 px-4 text-gray-700 bg-slate-100 hover:bg-slate-200 rounded-lg">
+                <button id="open-gallery-button" class="font-normal w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-100 hover:bg-slate-200 rounded-lg">
                     <i class="fas fa-images"></i> Pilih dari Galeri
                 </button>
             </div>
         </div>
     </div>
-
-    
-    <footer class="bg-footer-bg text-gray-600 py-6 text-center mt-16 sm:mt-20">
+    <footer class="bg-[#DDE3E9] text-[#3F7D58]  font-normal py-6 text-center">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <p class="text-xs sm:text-sm">&copy; 2025 TrashGu | CC25-CF125. All rights reserved.</p>
       </div>
@@ -413,7 +409,7 @@ main {
                 const headers = localStorage.getItem('authToken') ? { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` } : {};
 
                 try {
-                    const response = await fetch(`http://localhost:5000${apiEndpoint}`, { method: 'POST', headers, body: formData });
+                    const response = await fetch(`${apiEndpoint}`, { method: 'POST', headers, body: formData });
                     const result = await response.json();
                     if (!response.ok) throw new Error(result.error || 'Terjadi kesalahan server.');
                     

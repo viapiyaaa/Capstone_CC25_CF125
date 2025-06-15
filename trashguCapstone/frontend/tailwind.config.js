@@ -7,9 +7,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+        fontFamily: {
+          poppins: ['Poppins'],
+        },
         colors: { 
             'custom-green': '#3F7D58',
             'custom-green-darker': '#326748',
+            'text-customText': '#414141',
             'hero-bg': '#EFEFEF', 
             'section-bg': '#F5F7FA', 
             'footer-bg': '#EFEFEF', 

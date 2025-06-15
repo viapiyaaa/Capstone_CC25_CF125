@@ -14,9 +14,19 @@ import requests  # Menggunakan requests untuk memanggil API
 from PIL import Image
 import io
 from collections import Counter
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.preprocessing import image as keras_image
+import numpy as np
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {
+    "origins": [
+        "https://trashgu.ivanrajwa.my.id",
+        "http://localhost:57304",
+        "http://192.168.100.14:57304",
+    ]
+}}, supports_credentials=True)
 
 # --- Konfigurasi Aplikasi ---
 app.config['SECRET_KEY'] = 'ganti-dengan-kunci-rahasia-super-aman-anda-56789'
@@ -60,6 +70,12 @@ HANDLING_SUGGESTIONS = {
     'trash': 'Jenis sampah ini umumnya tidak dapat didaur ulang. Buang sesuai prosedur kebersihan.',
     'TIDAK DIKETAHUI': "Jenis sampah tidak dapat dikenali. Coba ambil gambar dengan lebih jelas."
 }
+
+# --- Load TensorFlow Model & Labels ---
+MODEL = keras.models.load_model(os.path.join(os.path.dirname(__file__), 'model', 'best_model.keras'))
+MODEL_LABELS = [
+    'battery', 'biological', 'cardboard', 'clothes', 'glass', 'metal', 'paper', 'plastic', 'shoes', 'trash'
+]
 
 # --- Model Database ---
 class User(db.Model):
@@ -106,35 +122,54 @@ def token_required(f):
     return decorated
 
 # --- Fungsi Bantuan Prediksi ML (Menggunakan Hugging Face API) ---
-def predict_image_from_api(image_bytes):
-    # Ganti dengan URL API Inference dan Token dari akun Hugging Face Anda
+# def predict_image_from_api_old(image_bytes):
+#     # Ganti dengan URL API Inference dan Token dari akun Hugging Face Anda
 
-    # GANTI DENGAN TOKEN ANDA
+#     # GANTI DENGAN TOKEN ANDA
     
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-    try:
-        response = requests.post(API_URL, headers=headers, data=image_bytes, timeout=25)
-        response.raise_for_status()
-        result = response.json()
+#     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+#     try:
+#         response = requests.post(API_URL, headers=headers, data=image_bytes, timeout=25)
+#         response.raise_for_status()
+#         result = response.json()
         
-        if not result or not isinstance(result, list):
-            return None, None, 0.0, None, "Respons API tidak valid."
+#         if not result or not isinstance(result, list):
+#             return None, None, 0.0, None, "Respons API tidak valid."
             
-        best_prediction = max(result, key=lambda x: x['score'])
-        predicted_label_specific = best_prediction['label']
-        accuracy = float(best_prediction['score'])
+#         best_prediction = max(result, key=lambda x: x['score'])
+#         predicted_label_specific = best_prediction['label']
+#         accuracy = float(best_prediction['score'])
+#         main_category = REMAP_DICT.get(predicted_label_specific, 'RESIDU')
+#         suggestions = [HANDLING_SUGGESTIONS.get(predicted_label_specific, HANDLING_SUGGESTIONS['TIDAK DIKETAHUI'])]
+        
+#         return main_category, predicted_label_specific, accuracy, suggestions, None
+        
+#     except requests.exceptions.RequestException as e:
+#         app.logger.error(f"Error memanggil Hugging Face API: {e}")
+#         return None, None, 0.0, None, f"Gagal terhubung ke server model. Model mungkin sedang dimuat, coba beberapa saat lagi."
+#     except Exception as e:
+#         app.logger.error(f"Error memproses respons API: {e}")
+#         return None, None, 0.0, None, f"Gagal memproses hasil prediksi: {e}"
+
+# --- Fungsi Prediksi Lokal ---
+def predict_image_from_api(image_bytes):
+    try:
+        img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+        img = img.resize((150, 150))
+        img_array = keras_image.img_to_array(img)
+        img_array = img_array / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+
+        preds = MODEL.predict(img_array)
+        best_idx = int(tf.argmax(preds[0]))
+        predicted_label_specific = MODEL_LABELS[best_idx]
+        accuracy = float(preds[0][best_idx])
         main_category = REMAP_DICT.get(predicted_label_specific, 'RESIDU')
         suggestions = [HANDLING_SUGGESTIONS.get(predicted_label_specific, HANDLING_SUGGESTIONS['TIDAK DIKETAHUI'])]
-        
         return main_category, predicted_label_specific, accuracy, suggestions, None
-        
-    except requests.exceptions.RequestException as e:
-        app.logger.error(f"Error memanggil Hugging Face API: {e}")
-        return None, None, 0.0, None, f"Gagal terhubung ke server model. Model mungkin sedang dimuat, coba beberapa saat lagi."
     except Exception as e:
-        app.logger.error(f"Error memproses respons API: {e}")
-        return None, None, 0.0, None, f"Gagal memproses hasil prediksi: {e}"
-
+        app.logger.error(f"Error prediksi lokal: {e}")
+        return None, None, 0.0, None, f"Gagal memproses prediksi lokal: {e}"
 
 # --- API Endpoints ---
 @app.route('/api/register', methods=['POST'])
@@ -241,7 +276,7 @@ def get_history(current_user):
                 'image_url': history_item.image_url,
                 'classification_result': history_item.classification_result,
                 'accuracy': history_item.accuracy,
-                'timestamp': history_item.timestamp.isoformat(),
+                'timestamp': history_item.timestamp.isoformat() + 'Z',
                 'specific_waste_name': history_item.specific_name,
                 'handling_suggestion': history_item.suggestion,
             })

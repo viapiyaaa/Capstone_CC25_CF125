@@ -15,7 +15,7 @@
             font-family: 'Poppins', sans-serif;
         }
         .sidebar-item.active {
-            background-color: #16A34A;
+            background-color: #3F7D58;
             color: white;
         }
         .sidebar-item.active i {
@@ -32,7 +32,7 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 font-poppins text-customText">
     <div class="relative min-h-screen md:flex">
         <!-- Overlay untuk mobile -->
         <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
@@ -52,31 +52,31 @@
                 <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-riwayat">
                     <i class="fas fa-history fa-fw mr-3 w-5"></i><span>Riwayat</span>
                 </a>
-                <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-statistik">
+                <!-- <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-statistik">
                     <i class="fas fa-chart-pie fa-fw mr-3 w-5"></i><span>Statistik</span>
-                </a>
+                </a> -->
                 <a href="#" class="sidebar-item flex items-center py-3 px-4 rounded-lg font-semibold hover:bg-gray-100" data-page="page-pengaturan">
                     <i class="fas fa-cog fa-fw mr-3 w-5"></i><span>Pengaturan</span>
                 </a>
             </nav>
-            <div class="p-4">
-                <a href="#" id="logout-button" class="flex items-center py-3 px-4 rounded-lg font-semibold text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
+            <!-- <div class="p-4">
+                <a href="./index.html" id="logout-button" class="flex items-center py-3 px-4 rounded-lg font-semibold text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
                     <i class="fas fa-sign-out-alt fa-fw mr-3 w-5"></i><span>Logout</span>
                 </a>
-            </div>
+            </div> -->
         </aside>
         
         <!-- Main Content Wrapper -->
         <div class="flex-1 flex flex-col max-h-screen overflow-hidden">
              <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-10 p-4 flex items-center justify-between border-b">
-                <button id="sidebar-toggle-button" class="md:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
+                <button id="sidebar-toggle-button" class="md:hidden nav-link text-[#3F7D58] hover:font-bold focus:outline-none"><i class="fas fa-bars fa-lg"></i></button>
                 <div class="flex items-center gap-4 ml-auto">
                     <span class="text-sm text-gray-700 hidden sm:block">Halo, <strong id="user-name-placeholder">User</strong>!</span>
                     <div class="relative">
                         <button id="user-menu-button" class="focus:outline-none"><img class="h-9 w-9 rounded-full object-cover" src="https://placehold.co/40x40" alt="User avatar" id="navbar-user-avatar"></button>
                         <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 py-1">
                             <a href="#" data-page="page-pengaturan" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
-                            <a href="#" id="logout-button-dropdown" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
+                            <a href="./index.html" id="logout-button-dropdown" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                     </div>
                 </div>
 
-                <!-- Halaman Statistik -->
+                <!-- Halaman Statistik
                 <div id="page-statistik" class="page-content hidden">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Statistik Klasifikasi</h2>
                     <h3 class="text-xl font-semibold text-gray-700 mb-4">Ringkasan Total</h3>
@@ -154,7 +154,7 @@
                         <h3 class="text-xl font-semibold mb-4">Distribusi Kategori Sampah</h3>
                         <div class="h-96 w-full"><canvas id="pie-chart-statistik"></canvas></div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Halaman Pengaturan -->
                 <div id="page-pengaturan" class="page-content hidden">
@@ -234,7 +234,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const API_BASE_URL = 'https://PebriA.pythonanywhere.com';
+        // const API_BASE_URL = 'https://PebriA.pythonanywhere.com';
         const sidebar = document.getElementById('dashboard-sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle-button');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -291,13 +291,13 @@
                 switchPage(e.target.dataset.page);
             });
         }
-        function handleLogout(e) { 
-            e.preventDefault(); 
-            localStorage.clear(); 
-            window.location.href = './login.html';
-        }
-        document.getElementById('logout-button').addEventListener('click', handleLogout);
-        document.getElementById('logout-button-dropdown').addEventListener('click', handleLogout);
+        // function handleLogout(e) { 
+        //     e.preventDefault(); 
+        //     localStorage.clear(); 
+        //     window.location.href = './index.html';
+        // }
+        // document.getElementById('logout-button').addEventListener('click', handleLogout);
+        // document.getElementById('logout-button-dropdown').addEventListener('click', handleLogout);
 
         // --- (Blok Fetch Data tidak berubah) ---
         async function fetchData() {
@@ -305,8 +305,8 @@
             if (!authToken) { handleLogout(new Event('click')); return; }
             try {
                 const [statsRes, historyRes] = await Promise.all([
-                    fetch(`${API_BASE_URL}/api/statistics`, { headers: { 'Authorization': `Bearer ${authToken}` }}),
-                    fetch(`${API_BASE_URL}/api/history`, { headers: { 'Authorization': `Bearer ${authToken}` }})
+                    fetch(`/api/statistics`, { headers: { 'Authorization': `Bearer ${authToken}` }}),
+                    fetch(`/api/history`, { headers: { 'Authorization': `Bearer ${authToken}` }})
                 ]);
                 if (statsRes.status === 401 || historyRes.status === 401) { handleLogout(new Event('click')); return; }
                 if (!statsRes.ok) throw new Error(`Gagal memuat statistik: ${statsRes.statusText}`);
@@ -349,7 +349,7 @@
 
         // --- (Blok Update Stats UI tidak berubah) ---
         function updateStatsUI(data) {
-             if (data && data.total_classifications > 0) {
+            if (data && data.total_classifications > 0) {
                 document.getElementById('stats-total').textContent = data.total_classifications;
                 document.getElementById('stats-organik').textContent = data.category_counts.ORGANIK || 0;
                 document.getElementById('stats-anorganik').textContent = data.category_counts.ANORGANIK || 0;
@@ -362,12 +362,12 @@
                         statsCloneContainer.appendChild(card.cloneNode(true));
                     });
                 }
-             }
+            }
         }
         
         // --- (Blok Update Recent History UI tidak berubah) ---
         function updateRecentHistoryUI(histories) {
-             const container = document.getElementById('recent-activity-list');
+            const container = document.getElementById('recent-activity-list');
             if (!container) return;
             container.innerHTML = '';
             if (!histories || histories.length === 0) {
@@ -384,9 +384,9 @@
                 itemEl.innerHTML = `
                     <div class="flex-1 min-w-0">
                         <p class="font-semibold text-gray-800" title="${item.filename || 'Gambar'}">
-                           ${item.filename || 'Gambar'} - <span class="font-bold ${categoryColor}">${item.classification_result}</span>
+                            ${item.filename || 'Gambar'} - <span class="font-bold ${categoryColor}">${item.classification_result}</span>
                         </p>
-                        <p class="text-sm text-gray-500 mt-1">${new Date(item.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour:'2-digit', minute: '2-digit'})}</p>
+                        <p class="text-sm text-gray-500 mt-1">${new Date(item.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour:'2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta', hour12: false})}</p>
                     </div>
                     <div class="ml-auto flex-shrink-0">
                         <span class="font-bold text-xs py-1 px-2 rounded-full ${accuracyColor}">${accuracy}%</span>
@@ -400,34 +400,66 @@
         function updateAllHistoryUI(histories) {
             const container = document.getElementById('all-history-items-container');
             const loader = document.getElementById('loading-all-history');
-            if(!container || !loader) return;
+            if (!container || !loader) return;
+
             container.innerHTML = '';
+
             if (!histories || histories.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada riwayat klasifikasi.</p>';
                 loader.classList.add('hidden');
                 return;
             }
-            histories.forEach(item => {
+
+            histories.forEach((item) => {
                 const accuracy = (item.accuracy * 100).toFixed(0);
                 const badgeColor = accuracy > 85 ? 'bg-green-100 text-green-700' : accuracy > 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+
+                // Gunakan placeholder kalau image_url kosong
+                const baseUrl = 'http://localhost:5000'; 
+                const imageUrl =
+                item.image_url && item.image_url.trim() !== ''
+                    ? `${baseUrl}/${item.image_url.replace(/^\/+/, '')}` 
+                    : 'https://placehold.co/48x48';
+
                 const itemEl = document.createElement('div');
                 itemEl.className = 'p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 hover:bg-gray-50';
+
                 itemEl.innerHTML = `
-                    <div class="flex items-center gap-4 w-full sm:w-auto">
-                        <img src="${item.image_url ? API_BASE_URL + item.image_url : 'https://placehold.co/48x48'}" alt="${item.filename}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-gray-800 truncate" title="${item.filename || 'Gambar'}">${item.filename || 'Gambar'}</p>
-                            <p class="text-xs text-gray-400 mt-1">${new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}</p>
-                        </div>
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <img
+                    src="${imageUrl}"
+                    alt="${item.filename || 'Gambar'}"
+                    class="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                    onerror="this.onerror=null;this.src='https://placehold.co/48x48';"
+                    >
+                    <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-gray-800 truncate" title="${item.filename || 'Gambar'}">
+                        ${item.filename || 'Gambar'}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        ${new Intl.DateTimeFormat('id-ID', {
+                        dateStyle: 'long',
+                        timeStyle: 'short',
+                        timeZone: 'Asia/Jakarta',
+                        }).format(new Date(item.timestamp))}
+                    </p>
                     </div>
-                    <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
-                        <span class="font-bold text-sm py-1 px-3 rounded-full ${badgeColor}">${accuracy}%</span>
-                        <span class="font-semibold text-sm w-24 text-center">${item.classification_result}</span>
-                        <button title="Lihat Detail" class="view-button text-gray-400 hover:text-blue-500" data-history-id="${item.id}"><i class="fas fa-eye fa-lg"></i></button>
-                        <button title="Hapus" class="delete-button text-gray-400 hover:text-red-500" data-history-id="${item.id}"><i class="fas fa-trash-alt fa-lg"></i></button>
-                    </div>`;
-                container.appendChild(itemEl);
-            });
+                </div>
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+                    <span class="font-bold text-sm py-1 px-3 rounded-full ${badgeColor}">${accuracy}%</span>
+                    <span class="font-semibold text-sm w-24 text-center">${item.classification_result || '-'}</span>
+                    <button title="Lihat Detail" class="view-button text-gray-400 hover:text-blue-500" data-history-id="${item.id}">
+                    <i class="fas fa-eye fa-lg"></i>
+                    </button>
+                    <button title="Hapus" class="delete-button text-gray-400 hover:text-red-500" data-history-id="${item.id}">
+                    <i class="fas fa-trash-alt fa-lg"></i>
+                    </button>
+                </div>
+                `;
+
+                    container.appendChild(itemEl);
+                });
+
             loader.classList.add('hidden');
         }
 
@@ -451,33 +483,58 @@
         }
         
         function openViewModal(historyId) {
-            const item = allHistories.find(h => h.id == historyId);
+            const item = allHistories.find((h) => h.id == historyId);
             if (!item) return;
-            const accuracy = (item.accuracy * 100);
+
+            const accuracy = item.accuracy * 100;
+
+            // --- Tambahkan base URL backend ---
+            const baseUrl = 'http://localhost:5000'; 
+            const imageUrl = item.image_url && item.image_url.trim() !== '' 
+                ? `${baseUrl}/${item.image_url.replace(/^\/+/, '')}` 
+                : 'https://placehold.co/400x400';
+
             const detailWrapper = document.getElementById('detail-content-wrapper');
             detailWrapper.innerHTML = `
                 <div class="w-full md:w-1/2 flex-shrink-0 bg-gray-200">
-                    <img src="${item.image_url ? API_BASE_URL + item.image_url : 'https://placehold.co/400x400'}" class="w-full h-full object-contain">
+                <img src="${imageUrl}" alt="${item.filename || 'Gambar'}"
+                    class="w-full h-full object-contain"
+                    onerror="this.onerror=null;this.src='https://placehold.co/400x400';">
                 </div>
                 <div class="p-6 flex flex-col">
-                    <span class="text-xs font-bold uppercase tracking-wider bg-white/20 text-white py-1 px-2 rounded-full self-start">${item.classification_result || 'N/A'}</span>
-                    <h2 class="text-4xl font-bold mt-2">${item.specific_waste_name || 'Nama Sampah'}</h2>
-                    <p class="text-sm text-gray-300 mt-1">Waktu: ${new Date(item.timestamp).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}</p>
-                    <div class="mt-6">
-                        <label class="font-semibold">Tingkat Akurasi</label>
-                        <div class="w-full bg-white/30 rounded-full h-2.5 mt-2">
-                            <div class="bg-white h-2.5 rounded-full" style="width: ${accuracy}%"></div>
-                        </div>
-                        <p class="text-right text-sm font-bold">${accuracy.toFixed(0)}%</p>
+                <span class="text-xs font-bold uppercase tracking-wider bg-white/20 text-white py-1 px-2 rounded-full self-start">
+                    ${item.classification_result || 'N/A'}
+                </span>
+                <h2 class="text-4xl font-bold mt-2">${item.specific_waste_name || 'Nama Sampah'}</h2>
+                <p class="text-sm text-gray-300 mt-1">
+                    Waktu: ${new Date(item.timestamp).toLocaleString('id-ID', {
+                    dateStyle: 'full',
+                    timeStyle: 'short',
+                    })}
+                </p>
+                <div class="mt-6">
+                    <label class="font-semibold">Tingkat Akurasi</label>
+                    <div class="w-full bg-white/30 rounded-full h-2.5 mt-2">
+                    <div class="bg-white h-2.5 rounded-full" style="width: ${accuracy}%"></div>
                     </div>
-                    <div class="mt-4 flex-grow">
-                        <label class="font-semibold">Saran Penanganan</label>
-                        <p class="text-sm text-gray-200 mt-2">${item.handling_suggestion || 'Tidak ada saran penanganan.'}</p>
-                    </div>
-                    <button id="modal-close-detail" class="mt-6 bg-white text-green-700 font-bold py-2 px-4 rounded-lg self-end hover:bg-gray-200">Tutup</button>
+                    <p class="text-right text-sm font-bold">${accuracy.toFixed(0)}%</p>
+                </div>
+                <div class="mt-4 flex-grow">
+                    <label class="font-semibold">Saran Penanganan</label>
+                    <p class="text-sm text-gray-200 mt-2">
+                    ${item.handling_suggestion || 'Tidak ada saran penanganan.'}
+                    </p>
+                </div>
+                <button id="modal-close-detail" class="mt-6 bg-white text-green-700 font-bold py-2 px-4 rounded-lg self-end hover:bg-gray-200">
+                    Tutup
+                </button>
                 </div>
             `;
+
+            // Tambahkan event listener tombol "Tutup"
             detailWrapper.querySelector('#modal-close-detail').addEventListener('click', () => closeModal(viewModal));
+
+            // Tampilkan modal
             openModal(viewModal);
         }
 
@@ -486,7 +543,7 @@
         async function handleDelete() {
             if (!historyIdToAction) return;
             try {
-                const response = await fetch(`${API_BASE_URL}/api/history/${historyIdToAction}`, {
+                const response = await fetch(`/api/history/${historyIdToAction}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
                 });
@@ -529,7 +586,7 @@
             avatarUploadMessage.className = 'text-xs text-center mb-4 text-gray-500';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/user/avatar`, {
+                const response = await fetch(`/api/user/avatar`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` },
                     body: formData
@@ -538,7 +595,7 @@
 
                 if (!response.ok) throw new Error(result.error || 'Gagal mengunggah foto.');
 
-                const newAvatarUrl = API_BASE_URL + result.avatarUrl;
+                const newAvatarUrl = result.avatarUrl;
                 document.getElementById('profile-avatar').src = newAvatarUrl;
                 document.getElementById('navbar-user-avatar').src = newAvatarUrl;
                 localStorage.setItem('userAvatar', newAvatarUrl); 
@@ -572,7 +629,7 @@
             passwordMessage.className = 'text-sm text-gray-500';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/user/change-password`, {
+                const response = await fetch(`/api/user/change-password`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -604,7 +661,7 @@
                 labels: ['Organik', 'Anorganik', 'Residu'],
                 datasets: [{
                     data: [categoryCounts.ORGANIK || 0, categoryCounts.ANORGANIK || 0, categoryCounts.RESIDU || 0],
-                    backgroundColor: ['#F97316', '#3B82F6', '#6B7280'],
+                    backgroundColor: ['#22C55E', '#3B82F6', '#6B7280'],
                     borderColor: '#FFFFFF', 
                     borderWidth: 4,
                     hoverOffset: 8
